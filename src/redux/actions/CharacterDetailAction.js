@@ -18,13 +18,13 @@ export const getStarWarCharacter = (id) => {
     } catch (error) {
       dispatch({
         type: FAILED_STAR_WAR_CHARACTER,
-        payload: error,
+        payload: error.response.data.detail,
       });
     }
   };
 };
 
-export const clearStarWarCharacter = (id) => {
+export const clearStarWarCharacter = () => {
   return async (dispatch) => {
     dispatch({
       type: DELETE_STAR_WAR_CHARACTER,
