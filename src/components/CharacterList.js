@@ -53,6 +53,7 @@ export const CharacterList = () => {
           <div style={style} key={index}>
             <h3>{starWarCharacter.name}</h3>
 
+            {/* string manipulation to get id out from url */}
             <NavLink
               to={`/people/${starWarCharacter.url.substring(
                 starWarCharacter.url.lastIndexOf(
