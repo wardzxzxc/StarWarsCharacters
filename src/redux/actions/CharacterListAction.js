@@ -35,6 +35,7 @@ export const getNextPage = () => {
     });
 
     const currentPage = getState().characterListReducer.currentPage;
+
     dispatch({
       type: LOADING_STAR_WAR_CHARACTERS,
     });
@@ -49,9 +50,10 @@ export const getNextPage = () => {
         payload: response.data.results,
       });
     } catch (error) {
+      console.log(error);
       dispatch({
         type: FAILED_STAR_WAR_CHARACTERS,
-        payload: error.response.data.detail,
+        payload: error.response.data,
       });
     }
   };

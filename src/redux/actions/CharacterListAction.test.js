@@ -11,7 +11,6 @@ import { expectedDataGetNextPage } from "./ExpectedDataGetNextPage";
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const axiosMock = new MockAdapter(axios);
-const store = mockStore();
 
 const SET_STAR_WAR_CHARACTERS = "SET_STAR_WAR_CHARACTERS";
 const INCREASE_CURRENT_PAGE = "INCREASE_CURRENT_PAGE";
@@ -21,6 +20,7 @@ const CLEAR_STAR_WAR_CHARACTERS = "CLEAR_STAR_WAR_CHARACTERS";
 
 describe("getFirstPage", () => {
   it("expected actions should be dispatched when request is successful", () => {
+    const store = mockStore();
     axiosMock.reset();
     store.clearActions();
     // Expected data
@@ -46,6 +46,7 @@ describe("getFirstPage", () => {
   });
 
   it("expected actions should be dispatched when request is unsuccessful", () => {
+    const store = mockStore();
     axiosMock.reset();
     store.clearActions();
     const mockedError = {
@@ -72,11 +73,18 @@ describe("getFirstPage", () => {
 describe("getNextPage", () => {
   it("expected actions should be dispatched when request is successful", () => {
     axiosMock.reset();
-    store.clearActions();
+
     // Mocked data
     const mockedData = mockedDataGetNextPage;
     // Expected data
     const expectedData = expectedDataGetNextPage;
+    // Mocked state
+    const mockedState = {
+      characterListReducer: {
+        currentPage: 2,
+      },
+    };
+    const store = mockStore(mockedState);
 
     //Axios returns 200 with data
     axiosMock
@@ -94,13 +102,15 @@ describe("getNextPage", () => {
       { type: SET_STAR_WAR_CHARACTERS, payload: expectedData },
     ];
 
-    return store.dispatch(getFirstPage()).then(() => {
+    return store.dispatch(getNextPage()).then(() => {
       const actualActions = store.getActions();
+      const actualState = store.getState();
       expect(actualActions).toEqual(expectedActions);
     });
   });
 
   it("expected actions should be dispatched when request is unsuccessful", () => {
+    const store = mockStore();
     axiosMock.reset();
     store.clearActions();
     const mockedError = {
@@ -126,6 +136,7 @@ describe("getNextPage", () => {
 
 describe("clearPage", () => {
   it("expected actions should be dispatched when clearing current state in redux store", () => {
+    const store = mockStore();
     store.clearActions();
 
     //Expected Actions to get from Action Creator
