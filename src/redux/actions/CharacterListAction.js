@@ -30,10 +30,6 @@ export const getFirstPage = () => {
 
 export const getNextPage = () => {
   return async (dispatch, getState) => {
-    dispatch({
-      type: INCREASE_CURRENT_PAGE,
-    });
-
     const currentPage = getState().characterListReducer.currentPage;
 
     dispatch({
@@ -49,11 +45,13 @@ export const getNextPage = () => {
         type: SET_STAR_WAR_CHARACTERS,
         payload: response.data.results,
       });
+      dispatch({
+        type: INCREASE_CURRENT_PAGE,
+      });
     } catch (error) {
-      console.log(error);
       dispatch({
         type: FAILED_STAR_WAR_CHARACTERS,
-        payload: error.response.data,
+        payload: error.response.data.detail,
       });
     }
   };

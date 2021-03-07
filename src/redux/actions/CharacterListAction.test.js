@@ -52,7 +52,7 @@ describe("getFirstPage", () => {
     const mockedError = {
       detail: "Not found",
     };
-    //Axios returns 404 with error, id = 17 is not found in API
+    //Axios returns 404 with error
     axiosMock.onGet("https://swapi.dev/api/people/").reply(404, mockedError);
 
     const expectedActions = [
@@ -72,19 +72,21 @@ describe("getFirstPage", () => {
 
 describe("getNextPage", () => {
   it("expected actions should be dispatched when request is successful", () => {
+    // Mocked state, next page is page 2
+    const mockedState = {
+      characterListReducer: {
+        currentPage: 2,
+      },
+    };
+
+    const store = mockStore(mockedState);
+    store.clearActions();
     axiosMock.reset();
 
     // Mocked data
     const mockedData = mockedDataGetNextPage;
     // Expected data
     const expectedData = expectedDataGetNextPage;
-    // Mocked state
-    const mockedState = {
-      characterListReducer: {
-        currentPage: 2,
-      },
-    };
-    const store = mockStore(mockedState);
 
     //Axios returns 200 with data
     axiosMock
@@ -94,30 +96,38 @@ describe("getNextPage", () => {
     //Expected Actions to get from Action Creator
     const expectedActions = [
       {
-        type: INCREASE_CURRENT_PAGE,
-      },
-      {
         type: LOADING_STAR_WAR_CHARACTERS,
       },
       { type: SET_STAR_WAR_CHARACTERS, payload: expectedData },
+      {
+        type: INCREASE_CURRENT_PAGE,
+      },
     ];
 
     return store.dispatch(getNextPage()).then(() => {
       const actualActions = store.getActions();
-      const actualState = store.getState();
       expect(actualActions).toEqual(expectedActions);
     });
   });
 
   it("expected actions should be dispatched when request is unsuccessful", () => {
-    const store = mockStore();
+    //Page 10 and non-existent
+    const mockedState = {
+      characterListReducer: {
+        currentPage: 10,
+      },
+    };
+    const store = mockStore(mockedState);
     axiosMock.reset();
     store.clearActions();
+
     const mockedError = {
       detail: "Not found",
     };
-    //Axios returns 404 with error, id = 17 is not found in API
-    axiosMock.onGet("https://swapi.dev/api/people/").reply(404, mockedError);
+    //Axios returns 404 with error as page 10 cannot be found
+    axiosMock
+      .onGet("https://swapi.dev/api/people/?page=10")
+      .reply(404, mockedError);
 
     const expectedActions = [
       {
@@ -127,7 +137,7 @@ describe("getNextPage", () => {
       { type: FAILED_STAR_WAR_CHARACTERS, payload: "Not found" },
     ];
 
-    return store.dispatch(getFirstPage()).then(() => {
+    return store.dispatch(getNextPage()).then(() => {
       const actualActions = store.getActions();
       expect(actualActions).toEqual(expectedActions);
     });
